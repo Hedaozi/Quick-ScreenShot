@@ -3,15 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:QucikScreenShot"
         mc:Ignorable="d"
         Title="Quick ScreenShot" Icon="Logo.png"
-        Height="300" Width="400" MinHeight="250" MinWidth="400"
+        Height="350" Width="500" MinHeight="300" MinWidth="420"
         Closed="ClosedMainWindow"
-        FontSize="14" FontFamily="Times New Roman">
+        FontSize="14" FontFamily="Times New Roman" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
@@ -35,12 +38,48 @@
         <Button Content="Select" Grid.Column="4" Grid.Row="1" Click="SelectSavePath"/>
         <Button Content="Open" Grid.Column="6" Grid.Row="1" Click="OpenSavePath"/>
 
-        <Label Content="Status" Grid.Column="1" Grid.Row="3"/>
-        <Label x:Name="status_Label" Content="Stop" Grid.Column="2" Grid.Row="3"/>
-        <Button x:Name="changeStatus_Button" Content="Start" Grid.Column="6" Grid.Row="3" Click="ChangeStatus"/>
+        <Label Content="Hot Key" Grid.Row="3" Grid.Column="1"/>
+        <Grid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="60"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="hotKey1_ComboBox" SelectionChanged="hotKey1_ComboBox_SelectionChanged"/>
+            <Label Content="+" Grid.Column="1"/>
+            <ComboBox x:Name="hotKey2_ComboBox" Grid.Column="2" SelectionChanged="hotKey2_ComboBox_SelectionChanged"/>
+            <Label Content="+" Grid.Column="3"/>
+            <ComboBox x:Name="hotKey3_ComboBox" Grid.Column="4"/>
+        </Grid>
 
-        <Label Content="Log" Grid.Column="1" Grid.Row="5"/>
-        <TextBox x:Name="Log_TextBox" IsReadOnly="True" Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="5" VerticalScrollBarVisibility="Auto" TextChanged="Log_TextBox_TextChanged"/>
+        <Label Content="Status" Grid.Column="1" Grid.Row="5"/>
+        <Label x:Name="status_Label" Content="Stop" Grid.Column="2" Grid.Row="5"/>
+        <Button x:Name="changeStatus_Button" Content="Start" Grid.Column="6" Grid.Row="5" Click="ChangeStatus"/>
 
+        <Label Content="About" Grid.Column="1" Grid.Row="7"/>
+        <Grid Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Documentation"/>
+            <Button Content="Read" Grid.Column="1" Click="ViewDocumentation"/>
+            <Label Content="Developed by He Lingfeng" Grid.Row="1" Grid.ColumnSpan="2"/>
+            <Label Content="Source: https://github.com/Hedaozi/Quick-ScreenShot" Grid.Row="2"/>
+            <Button Content="View" Grid.Row="2" Grid.Column="1" Click="ViewSource"/>
+        </Grid>
+        
+        <Label Content="Log" Grid.Column="1" Grid.Row="9"/>
+        <TextBox x:Name="Log_TextBox" IsReadOnly="True"
+                 Grid.Column="2" Grid.Row="9" Grid.ColumnSpan="5"
+                 VerticalScrollBarVisibility="Auto"
+                 TextChanged="Log_TextBox_TextChanged"/>
     </Grid>
 </Window>

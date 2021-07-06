@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows;
-using System.IO;
 using System.Windows.Forms;
+using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace QucikScreenShot
 {
@@ -22,6 +23,14 @@ namespace QucikScreenShot
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            hotKey1_ComboBox.ItemsSource = HotKey.AllKeys();
+            hotKey1_ComboBox.Text = "Ctrl";
+            hotKey2_ComboBox.Text = "Alt";
+            hotKey3_ComboBox.Text = "A";
         }
 
         private void ClosedMainWindow(object sender, EventArgs e)
@@ -106,8 +115,41 @@ namespace QucikScreenShot
 
         private void Hook_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyValue == (int)Keys.A && 
-                (int)Control.ModifierKeys == (int)Keys.Control + (int)Keys.Alt)
+            string hotKeyName1 = (string)hotKey1_ComboBox.SelectedItem;
+            string hotKeyName2 = (string)hotKey2_ComboBox.SelectedItem;
+            string hotKeyName3 = (string)hotKey3_ComboBox.SelectedItem;
+            Keys hotKey1, hotKey2, hotKey3;
+            bool pressHotKey = false;
+            if (hotKeyName3 != null)
+            {
+                hotKey1 = HotKey.StringToKeys(hotKeyName1);
+                hotKey2 = HotKey.StringToKeys(hotKeyName2);
+                hotKey3 = HotKey.StringToKeys(hotKeyName3);
+                if (e.KeyValue == (int)hotKey3 && 
+                    (int)Control.ModifierKeys == (int)hotKey1 + (int)hotKey2)
+                {
+                    pressHotKey = true;
+                }
+            }
+            else if (hotKeyName2 != null)
+            {
+                hotKey1 = HotKey.StringToKeys(hotKeyName1);
+                hotKey2 = HotKey.StringToKeys(hotKeyName2);
+                if (e.KeyValue == (int)hotKey2 &&
+                    (int)Control.ModifierKeys == (int)hotKey1)
+                {
+                    pressHotKey = true;
+                }
+            }
+            else
+            {
+                hotKey1 = HotKey.StringToKeys(hotKeyName1);
+                if (e.KeyValue == (int)hotKey1)
+                {
+                    pressHotKey = true;
+                }
+            }
+            if (pressHotKey)
             {
                 try
                 {
@@ -149,16 +191,6 @@ namespace QucikScreenShot
             bitmap.Save(filePath, ImageFormat.Png);
         }
 
-        private void SystemDpi(out int x, out int y)
-        {
-            using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
-            {
-                x = (int)g.DpiX;
-                y = (int)g.DpiY;
-                g.Dispose();
-            }
-        }
-
         private double Scaling(int DpiIndex)
         {
             switch (DpiIndex)
@@ -168,13 +200,58 @@ namespace QucikScreenShot
                 case 144: return 1.5;
                 case 168: return 1.75;
                 case 192: return 2;
+                default: return 1;
             }
-            return 1;
         }
 
         private string Now()
         {
             return DateTime.Now.ToString("yyyy_MM_dd HH_mm_ss_ffff");
+        }
+
+        private void hotKey1_ComboBox_SelectionChanged(
+            object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            string key = (string)hotKey1_ComboBox.SelectedItem;
+            if (!HotKey.IsModifierKeys(key))
+            {
+                hotKey2_ComboBox.ItemsSource = new List<string>();
+            }
+            else
+            {
+                hotKey2_ComboBox.ItemsSource = HotKey.SubKeys(key, true);
+            }
+        }
+
+        private void hotKey2_ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            string key = (string)hotKey2_ComboBox.SelectedItem;
+            if (key == null || !HotKey.IsModifierKeys(key))
+            {
+                hotKey3_ComboBox.ItemsSource = new List<string>();
+            }
+            else
+            {
+                hotKey3_ComboBox.ItemsSource = HotKey.SubKeys(key, false);
+            }
+        }
+
+        private void ViewDocumentation(object sender, RoutedEventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = "explorer.exe";
+            process.StartInfo.Arguments = Path.Combine(
+                Environment.CurrentDirectory, "Documentation", "Documentation.html"
+            );
+            process.Start();
+        }
+
+        private void ViewSource(object sender, RoutedEventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = "explorer.exe";
+            process.StartInfo.Arguments = "https://github.com/Hedaozi/Quick-ScreenShot";
+            process.Start();
         }
     }
 }
